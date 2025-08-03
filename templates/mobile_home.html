@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>IA Vente Facile - Mobile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { 
+            padding-bottom: 70px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .mobile-container { 
+            max-width: 100%; 
+            padding: 15px; 
+        }
+        .camera-btn {
+            width: 100%;
+            height: 200px;
+            border: 3px dashed #fff;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .camera-btn:hover, .camera-btn:active {
+            background: rgba(255,255,255,0.2);
+            transform: scale(0.98);
+        }
+        .platform-card {
+            border-radius: 15px;
+            border: none;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .platform-card:hover {
+            transform: translateY(-5px);
+        }
+        .platform-card.selected {
+            border: 3px solid #007bff;
+            box-shadow: 0 0 20px rgba(0,123,255,0.3);
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        .hero-text {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .feature-box {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="text-center py-4">
+        <h1 class="hero-text display-5 fw-bold">
+            <i class="fas fa-camera-retro"></i><br>
+            IA Vente Facile
+        </h1>
+        <p class="hero-text lead">
+            Photographiez, analysez, vendez !
+        </p>
+    </div>
+
+    <div class="mobile-container">
+        <!-- Zone de capture photo -->
+        <div class="mb-4">
+            <div class="camera-btn d-flex flex-column justify-content-center align-items-center text-white" 
+                 onclick="openCamera()">
+                <i class="fas fa-camera fa-4x mb-3"></i>
+                <h4>Prendre des photos</h4>
+                <p class="text-center">Touchez pour capturer vos objets</p>
+            </div>
+        </div>
+
+        <!-- Sélection de plateforme -->
+        <div class="feature-box">
+            <h5 class="mb-3">
+                <i class="fas fa-store text-primary"></i> Choisissez votre plateforme
+            </h5>
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="card platform-card h-100" data-platform="vinted" onclick="selectPlatform('vinted')">
+                        <div class="card-body text-center p-2">
+                            <i class="fas fa-tshirt text-primary fa-2x mb-2"></i>
+                            <h6>Vinted</h6>
+                            <small class="text-muted">Mode & Style</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card platform-card h-100" data-platform="ebay" onclick="selectPlatform('ebay')">
+                        <div class="card-body text-center p-2">
+                            <i class="fas fa-gavel text-success fa-2x mb-2"></i>
+                            <h6>eBay</h6>
+                            <small class="text-muted">Professionnel</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card platform-card h-100" data-platform="etsy" onclick="selectPlatform('etsy')">
+                        <div class="card-body text-center p-2">
+                            <i class="fas fa-palette text-warning fa-2x mb-2"></i>
+                            <h6>Etsy</h6>
+                            <small class="text-muted">Artisanal</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card platform-card h-100 selected" data-platform="general" onclick="selectPlatform('general')">
+                        <div class="card-body text-center p-2">
+                            <i class="fas fa-globe text-secondary fa-2x mb-2"></i>
+                            <h6>Général</h6>
+                            <small class="text-muted">Universel</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <div class="feature-box">
+            <h5 class="mb-3">
+                <i class="fas fa-star text-warning"></i> Fonctionnalités
+            </h5>
+            <div class="row text-center">
+                <div class="col-4">
+                    <i class="fas fa-robot text-primary fa-2x mb-2"></i>
+                    <br>
+                    <small>IA GPT-4</small>
+                </div>
+                <div class="col-4">
+                    <i class="fas fa-images text-success fa-2x mb-2"></i>
+                    <br>
+                    <small>Multi-photos</small>
+                </div>
+                <div class="col-4">
+                    <i class="fas fa-copy text-info fa-2x mb-2"></i>
+                    <br>
+                    <small>Copie facile</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Images sélectionnées -->
+        <div id="selectedImages" class="feature-box d-none">
+            <h5 class="mb-3">
+                <i class="fas fa-check text-success"></i> Images sélectionnées
+            </h5>
+            <div id="imageGrid" class="row g-2"></div>
+            <button class="btn btn-primary btn-lg w-100 mt-3" onclick="generateDescriptions()">
+                <i class="fas fa-magic"></i> Générer les descriptions
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation du bas -->
+    <div class="bottom-nav">
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col-4">
+                    <a href="{{ url_for('index') }}" class="text-decoration-none">
+                        <i class="fas fa-home text-primary"></i><br>
+                        <small>Accueil</small>
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a href="#" onclick="openCamera()" class="text-decoration-none">
+                        <i class="fas fa-camera text-success"></i><br>
+                        <small>Photo</small>
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a href="{{ url_for('history') }}" class="text-decoration-none">
+                        <i class="fas fa-history text-secondary"></i><br>
+                        <small>Historique</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input file caché -->
+    <input type="file" id="fileInput" multiple accept="image/*" capture="environment" style="display: none;">
+
+    <!-- Modal de traitement -->
+    <div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                    <h5>Analyse en cours...</h5>
+                    <p class="text-muted">Notre IA examine vos photos</p>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedPlatform = 'general';
+        let selectedFiles = [];
+
+        // Sélection de plateforme
+        function selectPlatform(platform) {
+            selectedPlatform = platform;
+            
+            // Mise à jour visuelle
+            document.querySelectorAll('.platform-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-platform="${platform}"]`).classList.add('selected');
+            
+            // Vibration tactile si supportée
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // Ouverture de la caméra
+        function openCamera() {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(100);
+            }
+            
+            document.getElementById('fileInput').click();
+        }
+
+        // Gestion des fichiers sélectionnés
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            if (files.length < 2 || files.length > 4) {
+                alert('Veuillez sélectionner entre 2 et 4 images');
+                return;
+            }
+
+            selectedFiles = files;
+            displaySelectedImages(files);
+        });
+
+        // Affichage des images sélectionnées
+        function displaySelectedImages(files) {
+            const container = document.getElementById('selectedImages');
+            const grid = document.getElementById('imageGrid');
+            
+            grid.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const col = document.createElement('div');
+                    col.className = 'col-6';
+                    col.innerHTML = `
+                        <div class="position-relative">
+                            <img src="${e.target.result}" class="img-fluid rounded" 
+                                 style="height: 100px; width: 100%; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                  style="width: 25px; height: 25px; margin: 5px;">
+                                ${index + 1}
+                            </span>
+                        </div>
+                    `;
+                    grid.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            container.classList.remove('d-none');
+            
+            // Scroll vers les images
+            setTimeout(() => {
+                container.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        // Génération des descriptions
+        function generateDescriptions() {
+            if (selectedFiles.length < 2) {
+                alert('Veuillez sélectionner au moins 2 images');
+                return;
+            }
+
+            // Vibration de confirmation
+            if ('vibrate' in navigator) {
+                navigator.vibrate([100, 50, 100]);
+            }
+
+            // Affichage du modal de traitement
+            const modal = new bootstrap.Modal(document.getElementById('processingModal'));
+            modal.show();
+
+            // Création du FormData
+            const formData = new FormData();
+            formData.append('platform', selectedPlatform);
+            
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+
+            // Envoi vers le serveur
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    return response.text();
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                modal.hide();
+                alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+            });
+        }
+
+        // Gestion des gestes tactiles pour améliorer l'expérience mobile
+        let touchStartY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaY = touchStartY - touchEndY;
+            
+            // Pull to refresh (swipe down)
+            if (deltaY < -100 && window.scrollY === 0) {
+                location.reload();
+            }
+        });
+
+        // Prévention du zoom double-tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
