@@ -1,0 +1,57 @@
+# IA Vente Facile - Dépendances Python
+# Application Flask pour génération de descriptions de vente via IA
+
+# Framework web
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Base de données ORM
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.23
+
+# IA et traitement d'images
+openai==1.3.9
+Pillow==10.1.0
+
+# Gestion des dates et temps
+python-dateutil==2.8.2
+
+# Variables d'environnement (optionnel mais recommandé)
+python-dotenv==1.0.0
+
+# Serveur WSGI pour production (optionnel)
+gunicorn==21.2.0
+
+# Validation et sérialisation de données (optionnel)
+marshmallow==3.20.1
+
+# Gestion des migrations de base de données (optionnel)
+Flask-Migrate==4.0.5
+
+# Tests (optionnel)
+pytest==7.4.3
+pytest-flask==1.3.0
+
+# Sécurité et CORS (optionnel)
+Flask-CORS==4.0.0
+Flask-Talisman==1.1.0
+
+# Logging amélioré (optionnel)
+structlog==23.2.0
+
+# Cache (optionnel pour optimisation)
+Flask-Caching==2.1.0
+
+# Monitoring et métriques (optionnel)
+psutil==5.9.6
+
+# Pour PostgreSQL (décommentez si vous utilisez PostgreSQL)
+# psycopg2-binary==2.9.9
+
+# Pour MySQL (décommentez si vous utilisez MySQL)
+# PyMySQL==1.1.0
+
+# Dépendances de développement (décommentez pour le développement)
+# black==23.11.0  # Formatage de code
+# flake8==6.1.0   # Linting
+# mypy==1.7.1     # Type checking

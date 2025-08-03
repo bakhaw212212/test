@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}Résultats - IA Vente Facile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- En-tête des résultats -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="fas fa-magic text-primary"></i> Descriptions générées</h2>
+                <p class="text-muted">
+                    {{ descriptions|length }} descriptions optimisées pour 
+                    <span class="badge bg-primary">{{ platform.title() }}</span>
+                </p>
+            </div>
+            <div class="btn-group">
+                <a href="{{ url_for('export_csv') }}" class="btn btn-outline-success">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </a>
+                <a href="{{ url_for('export_json') }}" class="btn btn-outline-info">
+                    <i class="fas fa-file-code"></i> Export JSON
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouvelle génération
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistiques rapides -->
+        {% if descriptions %}
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-list-alt fa-2x mb-2"></i>
+                        <h3>{{ descriptions|length }}</h3>
+                        <p class="mb-0">Descriptions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-eye fa-2x mb-2"></i>
+                        <h3>{{ descriptions[0].object_analysis.type if descriptions[0].object_analysis else 'Objet' }}</h3>
+                        <p class="mb-0">Type détecté</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tags fa-2x mb-2"></i>
+                        <h3>{{ (descriptions|map(attribute='tags')|list|sum|length) // descriptions|length if descriptions else 0 }}</h3>
+                        <p class="mb-0">Tags moyens</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-euro-sign fa-2x mb-2"></i>
+                        <h3>Prix</h3>
+                        <p class="mb-0">Suggéré</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Analyse de l'objet -->
+        {% if descriptions and descriptions[0].object_analysis %}
+        {% set analysis = descriptions[0].object_analysis %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-search"></i> Analyse de l'objet</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Type:</strong> {{ analysis.type }}<br>
+                        <strong>Marque:</strong> {{ analysis.brand or 'Non identifiée' }}<br>
+                        <strong>État:</strong> {{ analysis.condition }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Couleurs:</strong> 
+                        {% for color in analysis.colors[:3] %}
+                            <span class="badge bg-secondary">{{ color }}</span>
+                        {% endfor %}<br>
+                        <strong>Matériaux:</strong>
+                        {% for material in analysis.materials[:3] %}
+                            <span class="badge bg-dark">{{ material }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if analysis.distinctive_features %}
+                <div class="mt-3">
+                    <strong>Caractéristiques distinctives:</strong>
+                    <ul class="list-inline mt-2">
+                        {% for feature in analysis.distinctive_features %}
+                        <li class="list-inline-item">
+                            <span class="badge bg-light text-dark">{{ feature }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Images uploadées -->
+        {% if images %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-images"></i> Images analysées</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for image in images %}
+                    <div class="col-6 col-md-3 mb-2">
+                        <img src="{{ url_for('static', filename='../uploads/' + image) }}" 
+                             class="img-fluid rounded shadow-sm" 
+                             alt="Image {{ loop.index }}"
+                             style="height: 150px; width: 100%; object-fit: cover;">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Descriptions générées -->
+        <div class="row">
+            {% for desc in descriptions %}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-file-alt text-primary"></i> Description {{ loop.index }}
+                        </h5>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary copy-btn" 
+                                    data-content-type="title" 
+                                    data-content="{{ desc.title }}"
+                                    title="Copier le titre">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="btn btn-outline-success copy-btn" 
+                                    data-content-type="full" 
+                                    data-content="{{ desc.title }}
+
+{{ desc.description }}
+
+Prix suggéré: {{ desc.suggested_price or 'Non spécifié' }}
+État: {{ desc.condition }}
+Tags: {{ desc.tags | join(', ') }}"
+                                    title="Copier tout">
+                                <i class="fas fa-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Titre -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-heading"></i> Titre
+                            </label>
+                            <div class="form-control bg-light">
+                                {{ desc.title }}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-align-left"></i> Description
+                            </label>
+                            <div class="form-control bg-light" style="height: auto; min-height: 120px;">
+                                {{ desc.description }}
+                            </div>
+                        </div>
+
+                        <!-- Métadonnées -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-euro-sign"></i> Prix suggéré
+                                </label>
+                                <div class="form-control bg-light">
+                                    {{ desc.suggested_price or 'Non spécifié' }}
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-star"></i> État
+                                </label>
+                                <div class="form-control bg-light">
+                                    {{ desc.condition }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-tags"></i> Mots-clés SEO
+                            </label>
+                            <div>
+                                {% for tag in desc.tags %}
+                                <span class="badge bg-primary me-1 mb-1">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Plateforme recommandée -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-store"></i> Plateforme
+                            </label>
+                            <div>
+                                <span class="badge bg-success">{{ desc.platform or platform }}</span>
+                                {% if desc.style_variant %}
+                                <span class="badge bg-info">{{ desc.style_variant }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> 
+                            Généré le {{ desc.generation_timestamp[:19] if desc.generation_timestamp else 'maintenant' }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-lg btn-primary me-3">
+                <i class="fas fa-plus"></i> Générer de nouvelles descriptions
+            </a>
+            <a href="{{ url_for('history') }}" class="btn btn-lg btn-outline-secondary">
+                <i class="fas fa-history"></i> Voir l'historique
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Toast de confirmation -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="copyToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong class="me-auto">Copié !</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Le contenu a été copié dans votre presse-papiers.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    const toast = new bootstrap.Toast(document.getElementById('copyToast'));
+
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const content = this.getAttribute('data-content');
+            const contentType = this.getAttribute('data-content-type');
+            
+            navigator.clipboard.writeText(content).then(function() {
+                toast.show();
+                
+                // Visual feedback
+                const originalIcon = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.classList.add('btn-success');
+                button.classList.remove('btn-outline-primary', 'btn-outline-success');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalIcon;
+                    button.classList.remove('btn-success');
+                    if (contentType === 'title') {
+                        button.classList.add('btn-outline-primary');
+                    } else {
+                        button.classList.add('btn-outline-success');
+                    }
+                }, 2000);
+                
+            }).catch(function(err) {
+                console.error('Erreur lors de la copie: ', err);
+                alert('Erreur lors de la copie. Veuillez sélectionner et copier manuellement.');
+            });
+        });
+    });
+
+    // Auto-scroll vers les descriptions après chargement
+    if (document.querySelector('.card')) {
+        setTimeout(() => {
+            document.querySelector('.card').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }, 500);
+    }
+});
+</script>
+{% endblock %}

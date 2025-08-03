@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - IA Vente Facile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- En-tête Hero -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">
+                <i class="fas fa-camera-retro"></i> IA Vente Facile
+            </h1>
+            <p class="lead text-muted">
+                Photographiez n'importe quel objet et générez automatiquement des descriptions de vente optimisées pour Vinted, eBay, Etsy et plus !
+            </p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <span class="badge bg-primary fs-6"><i class="fas fa-robot"></i> IA GPT-4</span>
+                <span class="badge bg-success fs-6"><i class="fas fa-images"></i> Multi-images</span>
+                <span class="badge bg-warning fs-6"><i class="fas fa-download"></i> Export CSV/JSON</span>
+            </div>
+        </div>
+
+        <!-- Formulaire principal -->
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-gradient-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-upload"></i> Téléchargez vos photos
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('upload_files') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                    
+                    <!-- Sélection de la plateforme -->
+                    <div class="mb-4">
+                        <label for="platform" class="form-label fw-bold">
+                            <i class="fas fa-store"></i> Plateforme de vente
+                        </label>
+                        <select class="form-select form-select-lg" id="platform" name="platform" required>
+                            <option value="general">Général (tous sites)</option>
+                            <option value="vinted">Vinted - Mode & Accessoires</option>
+                            <option value="ebay">eBay - Professionnel</option>
+                            <option value="etsy">Etsy - Créatif & Artisanal</option>
+                        </select>
+                        <div class="form-text">
+                            Choisissez la plateforme pour optimiser le style et le ton des descriptions
+                        </div>
+                    </div>
+
+                    <!-- Zone de drop pour les images -->
+                    <div class="mb-4">
+                        <label for="files" class="form-label fw-bold">
+                            <i class="fas fa-images"></i> Images de l'objet (2-4 photos)
+                        </label>
+                        <div class="drop-zone" id="dropZone">
+                            <div class="drop-zone-content">
+                                <i class="fas fa-cloud-upload-alt drop-zone-icon"></i>
+                                <h4>Glissez-déposez vos images ici</h4>
+                                <p class="text-muted">ou cliquez pour sélectionner</p>
+                                <input type="file" class="form-control d-none" id="files" name="files" 
+                                       multiple accept="image/*" required>
+                                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('files').click()">
+                                    <i class="fas fa-folder-open"></i> Parcourir
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            Formats acceptés: JPG, PNG, GIF, WebP. Taille max: 16MB par image.
+                        </div>
+                    </div>
+
+                    <!-- Prévisualisation des images -->
+                    <div id="imagePreview" class="mb-4 d-none">
+                        <h5><i class="fas fa-eye"></i> Aperçu des images sélectionnées</h5>
+                        <div class="row" id="previewContainer"></div>
+                    </div>
+
+                    <!-- Bouton de soumission -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-magic"></i> Générer les descriptions IA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Comment ça marche -->
+        <div class="mt-5">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-question-circle"></i> Comment ça marche ?
+            </h3>
+            <div class="row">
+                <div class="col-md-4 text-center mb-3">
+                    <div class="p-3">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-camera fa-lg"></i>
+                        </div>
+                        <h5 class="mt-3">1. Photographiez</h5>
+                        <p class="text-muted">Prenez 2-4 photos de votre objet sous différents angles</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <div class="p-3">
+                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-robot fa-lg"></i>
+                        </div>
+                        <h5 class="mt-3">2. IA Analyse</h5>
+                        <p class="text-muted">Notre IA analyse vos images et génère 6 descriptions optimisées</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <div class="p-3">
+                        <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-share-alt fa-lg"></i>
+                        </div>
+                        <h5 class="mt-3">3. Publiez</h5>
+                        <p class="text-muted">Copiez-collez les descriptions dans vos annonces de vente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <div class="mt-5">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-star"></i> Fonctionnalités
+            </h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Descriptions multiples:</strong> 6 variantes par objet
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Optimisé par plateforme:</strong> Vinted, eBay, Etsy
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Analyse intelligente:</strong> Marque, couleur, état
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Suggestion de prix:</strong> Estimation automatique
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Mots-clés SEO:</strong> Tags optimisés pour la recherche
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Export facile:</strong> CSV et JSON
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <h5>Génération en cours...</h5>
+                <p class="text-muted">Notre IA analyse vos images et génère les descriptions optimisées</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('files');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('previewContainer');
+    const uploadForm = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+
+    // Drag & Drop
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        fileInput.files = files;
+        handleFiles(files);
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+
+    // Handle files function
+    function handleFiles(files) {
+        if (files.length < 2 || files.length > 4) {
+            alert('Veuillez sélectionner entre 2 et 4 images');
+            return;
+        }
+
+        previewContainer.innerHTML = '';
+        imagePreview.classList.remove('d-none');
+
+        Array.from(files).forEach((file, index) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-3 mb-2';
+                    col.innerHTML = `
+                        <div class="card">
+                            <img src="${e.target.result}" class="card-img-top" style="height: 100px; object-fit: cover;">
+                            <div class="card-body p-2">
+                                <small class="text-muted">Image ${index + 1}</small>
+                            </div>
+                        </div>
+                    `;
+                    previewContainer.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Form submission
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (fileInput.files.length < 2 || fileInput.files.length > 4) {
+            alert('Veuillez sélectionner entre 2 et 4 images');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        loadingModal.show();
+        
+        // Submit form after showing modal
+        setTimeout(() => {
+            this.submit();
+        }, 500);
+    });
+});
+</script>
+{% endblock %}
